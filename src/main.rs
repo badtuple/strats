@@ -3,6 +3,7 @@ use std::io::BufRead;
 use structopt::StructOpt;
 
 mod stats;
+use stats::Metric;
 use stats::Stats;
 
 mod printer;
@@ -45,7 +46,8 @@ fn main() {
     let args = Cli::from_args();
 
     let mut stats = Stats::new();
-    let printer = Printer::new(args.pretty, args.count, args.mean, args.sum, args.min, args.max);
+    let printer = Printer::new(args.pretty);
+    let metrics = Metric::from_args(args.count, args.mean, args.sum, args.min, args.max);
 
     let mut buffer = String::new();
     let stdin = stdin();
@@ -61,11 +63,13 @@ fn main() {
         }
 
         if args.incremental {
-            printer.print(&stats);
+            let results = stats.get_results(&metrics);
+            printer.print(results);
         }
 
         buffer.clear();
     }
 
-    printer.print(&stats);
+    let results = stats.get_results(&metrics);
+    printer.print(results);
 }

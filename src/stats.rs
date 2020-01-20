@@ -1,3 +1,35 @@
+#[derive(Copy, Clone, Debug)]
+pub enum Metric {
+    Count,
+    Mean,
+    Sum,
+    Min,
+    Max,
+}
+
+impl Metric {
+    pub fn from_args(count: bool, mean: bool, sum: bool, min: bool, max: bool) -> Vec<Metric> {
+        let mut metrics = vec![];
+        if count {
+            metrics.push(Metric::Count)
+        }
+        if mean {
+            metrics.push(Metric::Mean)
+        }
+        if sum {
+            metrics.push(Metric::Sum)
+        }
+        if min {
+            metrics.push(Metric::Min)
+        }
+        if max {
+            metrics.push(Metric::Max)
+        }
+
+        metrics
+    }
+}
+
 #[derive(Debug)]
 pub struct Stats {
     count: f64,
@@ -51,5 +83,22 @@ impl Stats {
 
     pub fn get_max(&self) -> f64 {
         self.max.unwrap()
+    }
+
+    pub fn get_results(&self, metrics: &Vec<Metric>) -> Vec<(Metric, f64)> {
+        metrics
+            .iter()
+            .map(|t| {
+                use Metric::*;
+                let result = match t {
+                    Count => self.get_count(),
+                    Mean => self.get_mean(),
+                    Sum => self.get_sum(),
+                    Min => self.get_min(),
+                    Max => self.get_max(),
+                };
+                (*t, result)
+            })
+            .collect()
     }
 }
