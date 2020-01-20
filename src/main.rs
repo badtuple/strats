@@ -12,22 +12,23 @@ use printer::Printer;
 #[derive(StructOpt, Debug)]
 struct Cli {
     /// Incrementally update the output each time an input is received.
+    /// [default: false]
     #[structopt(long)]
     incremental: bool,
 
-    /// Print results in a human friendly way.
+    /// Print results in a human friendly way. [default: false]
     #[structopt(long)]
     pretty: bool,
 
-    /// Count the number of entries received.
+    /// Count the number of entries received. [default: false]
     #[structopt(long)]
     count: bool,
 
-    /// Calculate the arithmetic mean.
+    /// Calculate the arithmetic mean. [default: false]
     #[structopt(long)]
     mean: bool,
 
-    /// Calculate the sum of the input.
+    /// Calculate the sum of the input. [default: false]
     #[structopt(long)]
     sum: bool,
 }
@@ -36,7 +37,7 @@ fn main() {
     let args = Cli::from_args();
 
     let mut stats = Stats::new();
-    let printer = Printer::new(args.human, args.count, args.mean, args.sum);
+    let printer = Printer::new(args.pretty, args.count, args.mean, args.sum);
 
     let mut buffer = String::new();
     let stdin = stdin();

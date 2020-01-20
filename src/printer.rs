@@ -8,12 +8,12 @@ enum StatType {
 }
 
 pub struct Printer {
-    human: bool,
+    pretty: bool,
     stats_requested: Vec<StatType>,
 }
 
 impl Printer {
-    pub fn new(human: bool, count: bool, mean: bool, sum: bool) -> Self {
+    pub fn new(pretty: bool, count: bool, mean: bool, sum: bool) -> Self {
         let mut stats_requested = vec![];
         if count {
             stats_requested.push(StatType::Count)
@@ -28,7 +28,7 @@ impl Printer {
         }
 
         Printer {
-            human,
+            pretty,
             stats_requested,
         }
     }
@@ -42,7 +42,7 @@ impl Printer {
         println!("{}", line);
     }
 
-    fn print_human(&self, results: Vec<(StatType, f64)>) {
+    fn print_pretty(&self, results: Vec<(StatType, f64)>) {
         let line = results
             .iter()
             .map(|result| format!("{:?}: {}", result.0, result.1))
@@ -66,8 +66,8 @@ impl Printer {
             })
             .collect();
 
-        if self.human {
-            self.print_human(results);
+        if self.pretty {
+            self.print_pretty(results);
         } else {
             self.print_computer(results);
         }
