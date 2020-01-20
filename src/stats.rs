@@ -2,8 +2,8 @@
 pub struct Stats {
     count: f64,
     sum: f64,
-    min: f64,
-    max: f64,
+    min: Option<f64>,
+    max: Option<f64>,
 }
 
 impl Stats {
@@ -11,8 +11,8 @@ impl Stats {
         Stats {
             count: 0.0,
             sum: 0.0,
-            min: 0.0,
-            max: 0.0,
+            min: None,
+            max: None,
         }
     }
 
@@ -20,12 +20,16 @@ impl Stats {
         self.count += 1.0;
         self.sum += x;
 
-        if x < self.min {
-            self.min = x
-        }
+        match self.min {
+            Some(min) if x < min => self.min = Some(x),
+            None => self.min = Some(x),
+            _ => (),
+        };
 
-        if x > self.max {
-            self.max = x
+        match self.max {
+            Some(max) if x > max => self.max = Some(x),
+            None => self.max = Some(x),
+            _ => (),
         }
     }
 
@@ -42,10 +46,10 @@ impl Stats {
     }
 
     pub fn get_min(&self) -> f64 {
-        self.min
+        self.min.unwrap()
     }
 
     pub fn get_max(&self) -> f64 {
-        self.max
+        self.max.unwrap()
     }
 }
