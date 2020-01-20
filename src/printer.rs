@@ -5,6 +5,8 @@ enum StatType {
     Count,
     Mean,
     Sum,
+    Min,
+    Max,
 }
 
 pub struct Printer {
@@ -13,7 +15,7 @@ pub struct Printer {
 }
 
 impl Printer {
-    pub fn new(pretty: bool, count: bool, mean: bool, sum: bool) -> Self {
+    pub fn new(pretty: bool, count: bool, mean: bool, sum: bool, min: bool, max: bool) -> Self {
         let mut stats_requested = vec![];
         if count {
             stats_requested.push(StatType::Count)
@@ -25,6 +27,14 @@ impl Printer {
 
         if sum {
             stats_requested.push(StatType::Sum)
+        }
+
+        if min {
+            stats_requested.push(StatType::Min)
+        }
+
+        if max {
+            stats_requested.push(StatType::Max)
         }
 
         Printer {
@@ -61,6 +71,8 @@ impl Printer {
                     Count => stats.get_count(),
                     Mean => stats.get_mean(),
                     Sum => stats.get_sum(),
+                    Min => stats.get_min(),
+                    Max => stats.get_max(),
                 };
                 (*t, result)
             })

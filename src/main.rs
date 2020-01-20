@@ -20,24 +20,32 @@ struct Cli {
     #[structopt(long)]
     pretty: bool,
 
-    /// Count the number of entries received. [default: false]
+    /// Report the number of entries received. [default: false]
     #[structopt(long)]
     count: bool,
 
-    /// Calculate the arithmetic mean. [default: false]
+    /// Report the arithmetic mean. [default: false]
     #[structopt(long)]
     mean: bool,
 
-    /// Calculate the sum of the input. [default: false]
+    /// Report the sum of the input. [default: false]
     #[structopt(long)]
     sum: bool,
+
+    /// Report the smallest entry. [default: false]
+    #[structopt(long)]
+    min: bool,
+
+    /// Report the largest entry. [default: false]
+    #[structopt(long)]
+    max: bool,
 }
 
 fn main() {
     let args = Cli::from_args();
 
     let mut stats = Stats::new();
-    let printer = Printer::new(args.pretty, args.count, args.mean, args.sum);
+    let printer = Printer::new(args.pretty, args.count, args.mean, args.sum, args.min, args.max);
 
     let mut buffer = String::new();
     let stdin = stdin();
