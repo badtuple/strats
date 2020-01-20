@@ -9,13 +9,11 @@ enum StatType {
 
 pub struct Printer {
     human: bool,
-    verbose: bool,
-
     stats_requested: Vec<StatType>,
 }
 
 impl Printer {
-    pub fn new(human: bool, verbose: bool, count: bool, mean: bool, sum: bool) -> Self {
+    pub fn new(human: bool, count: bool, mean: bool, sum: bool) -> Self {
         let mut stats_requested = vec![];
         if count {
             stats_requested.push(StatType::Count)
@@ -31,7 +29,6 @@ impl Printer {
 
         Printer {
             human,
-            verbose,
             stats_requested,
         }
     }
@@ -52,33 +49,6 @@ impl Printer {
             .collect::<Vec<String>>()
             .join(", ");
         print!("{}\r", line);
-    }
-
-    /// Print if and only if the configuration calls for it.
-    pub fn maybe_print(&self, stats: &Stats) {
-        if !self.verbose && !self.human {
-            return;
-        }
-
-        let results = self
-            .stats_requested
-            .iter()
-            .map(|t| {
-                use StatType::*;
-                let result = match t {
-                    Count => stats.get_count(),
-                    Mean => stats.get_mean(),
-                    Sum => stats.get_sum(),
-                };
-                (*t, result)
-            })
-            .collect();
-
-        match (self.verbose, self.human) {
-            (false, true) => self.print_human(results),
-            (true, _) => self.print_computer(results),
-            _ => (),
-        };
     }
 
     pub fn print(&self, stats: &Stats) {

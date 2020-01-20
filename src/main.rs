@@ -11,13 +11,13 @@ use printer::Printer;
 /// strats calculates stats on streams
 #[derive(StructOpt, Debug)]
 struct Cli {
-    /// Print results on a new line each time a new input is received.
+    /// Incrementally update the output each time an input is received.
     #[structopt(long)]
-    verbose: bool,
+    incremental: bool,
 
-    /// Update results on the commandline in a human friendly way.
+    /// Print results in a human friendly way.
     #[structopt(long)]
-    human: bool,
+    pretty: bool,
 
     /// Count the number of entries received.
     #[structopt(long)]
@@ -36,7 +36,7 @@ fn main() {
     let args = Cli::from_args();
 
     let mut stats = Stats::new();
-    let printer = Printer::new(args.human, args.verbose, args.count, args.mean, args.sum);
+    let printer = Printer::new(args.human, args.count, args.mean, args.sum);
 
     let mut buffer = String::new();
     let stdin = stdin();
@@ -51,7 +51,10 @@ fn main() {
             stats.register(v);
         }
 
-        printer.maybe_print(&stats);
+        if args.incremental {
+            printer.print(&stats);
+        }
+
         buffer.clear();
     }
 
