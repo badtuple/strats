@@ -1,16 +1,23 @@
 use std::io::stdin;
+use std::io::BufRead;
 use structopt::StructOpt;
+
+mod stats;
+use stats::Stats;
+
+mod printer;
+use printer::Printer;
 
 /// strats calculates stats on streams
 #[derive(StructOpt, Debug)]
 struct Cli {
     /// Print results on a new line each time a new input is received.
     #[structopt(long)]
-    immediate: bool,
+    verbose: bool,
 
     /// Update results on the commandline in a human friendly way.
     #[structopt(long)]
-    interactive: bool,
+    human: bool,
 
     /// Count the number of entries received.
     #[structopt(long)]
@@ -29,45 +36,24 @@ fn main() {
     let args = Cli::from_args();
 
     let mut stats = Stats::new();
+    let printer = Printer::new(args.human, args.verbose, args.count, args.mean, args.sum);
 
     let mut buffer = String::new();
-    while stdin()
+    let stdin = stdin();
+    let mut lock = stdin.lock();
+    while lock
         .read_line(&mut buffer)
         .expect("unable to read from stdin")
         > 0
     {
         let val = buffer.trim().parse::<f64>();
-        match val {
-            Ok(v) => stats.register(v),
-            Err(e) => eprintln!("{}", e),
+        if let Ok(v) = val {
+            stats.register(v);
         }
 
+        printer.maybe_print(&stats);
         buffer.clear();
     }
 
-    println!("{:?} {:?}", stats, stats.mean());
-}
-
-#[derive(Debug)]
-struct Stats {
-    count: f64,
-    sum: f64,
-}
-
-impl Stats {
-    fn new() -> Stats {
-        Stats {
-            count: 0.0,
-            sum: 0.0,
-        }
-    }
-
-    fn register(&mut self, x: f64) {
-        self.count += 1.0;
-        self.sum += x;
-    }
-
-    fn mean(&self) -> f64 {
-        self.sum / self.count
-    }
+    printer.print(&stats);
 }
